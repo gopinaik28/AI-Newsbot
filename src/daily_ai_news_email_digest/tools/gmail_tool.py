@@ -35,7 +35,8 @@ class GmailSendTool(BaseTool):
 
         msg = MIMEMultipart("alternative")
         msg["From"] = sender
-        msg["To"] = ", ".join(recipients)
+        msg["To"] = sender
+        msg["Bcc"] = ", ".join(recipients)
         msg["Subject"] = subject
         msg.attach(MIMEText(body, "html"))
 
@@ -43,4 +44,4 @@ class GmailSendTool(BaseTool):
             server.login(sender, password)
             server.sendmail(sender, recipients, msg.as_string())
 
-        return f"Email sent successfully to {len(recipients)} recipient(s): {', '.join(recipients)}"
+        return f"Email sent successfully to {len(recipients)} recipient(s) via BCC."
