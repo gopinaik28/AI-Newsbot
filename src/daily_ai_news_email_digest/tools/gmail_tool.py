@@ -24,7 +24,7 @@ class GmailSendTool(BaseTool):
 
     def _run(self, to: str, subject: str, body: str) -> str:
         sender = os.getenv("GMAIL_ADDRESS")
-        password = os.getenv("GMAIL_APP_PASSWORD")
+        password = (os.getenv("GMAIL_APP_PASSWORD") or "").replace(" ", "")
 
         if not sender or not password:
             return "Error: GMAIL_ADDRESS or GMAIL_APP_PASSWORD is not set in .env"
