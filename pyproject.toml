@@ -1,17 +1,16 @@
 [project]
 name = "daily_ai_news_email_digest"
 version = "0.1.0"
-description = "daily_ai_news_email_digest using crewAI"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+description = "Automated daily AI news digest delivered by email via multi-agent CrewAI pipeline"
+authors = [{ name = "Gopi", email = "gopidhanavath1@gmail.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[file-processing,google-genai,litellm,tools]==1.15.0",
+    "crewai[google-genai,litellm,tools]==1.15.0",
     "exa-py",
 ]
 
 [project.scripts]
 daily_ai_news_email_digest = "daily_ai_news_email_digest.main:run"
-run_crew = "daily_ai_news_email_digest.main:run"
 train = "daily_ai_news_email_digest.main:train"
 replay = "daily_ai_news_email_digest.main:replay"
 test = "daily_ai_news_email_digest.main:test"
