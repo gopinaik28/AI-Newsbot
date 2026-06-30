@@ -135,14 +135,14 @@ send_email_newsletter:
   description: >
     Send the HTML email newsletter via Gmail using the send email tool.
 
-    - Set `to`: gopidhanavath1@gmail.com
     - Set `subject`: 🤖 Daily AI News Digest — [Today's full date, e.g. June 30, 2026]
     - Set `body`: pass the raw HTML from the designer VERBATIM — do NOT alter it,
       do NOT wrap it in markdown or any formatting, copy it exactly as-is
 
-    After sending, confirm the email was dispatched successfully.
+    The tool automatically sends to all configured recipients. After sending,
+    confirm the email was dispatched successfully.
   expected_output: >
-    Confirmation that the email was sent successfully to gopidhanavath1@gmail.com
+    Confirmation that the email was sent successfully to all recipients
     with the correct subject line and raw HTML body.
   agent: email_delivery_agent
   context:
