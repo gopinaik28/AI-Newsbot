@@ -11,6 +11,7 @@ dependencies = [
 
 [project.scripts]
 daily_ai_news_email_digest = "daily_ai_news_email_digest.main:run"
+run_crew = "daily_ai_news_email_digest.main:run"
 train = "daily_ai_news_email_digest.main:train"
 replay = "daily_ai_news_email_digest.main:replay"
 test = "daily_ai_news_email_digest.main:test"
