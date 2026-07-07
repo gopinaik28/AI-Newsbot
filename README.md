@@ -37,7 +37,7 @@ A nicely formatted email every day with:
 | What | Technology |
 |------|-----------|
 | AI Agents | [CrewAI](https://crewai.com) |
-| AI Brain | Google Gemini 2.5 Flash |
+| AI Brain | Groq — Llama 3.3 70B (free tier) |
 | Web Search | [Exa](https://exa.ai) |
 | Email | Gmail (Python built-in) |
 | Auto Schedule | GitHub Actions |
@@ -50,7 +50,7 @@ A nicely formatted email every day with:
 ### What you need before starting
 - Python 3.10 or higher
 - A Gmail account
-- A [Gemini API key](https://aistudio.google.com/apikey) (free)
+- A [Groq API key](https://console.groq.com/keys) (free)
 - An [Exa API key](https://dashboard.exa.ai/api-keys) (free trial)
 
 ---
@@ -74,7 +74,7 @@ uv sync
 Create a file called `.env` in the project folder and fill it in:
 
 ```env
-GEMINI_API_KEY=your_gemini_key_here
+GROQ_API_KEY=your_groq_key_here
 EXA_API_KEY=your_exa_key_here
 GMAIL_ADDRESS=your_email@gmail.com
 GMAIL_APP_PASSWORD=your_app_password_here
@@ -85,7 +85,7 @@ RECIPIENT_EMAILS=you@gmail.com,friend@gmail.com
 
 | Key | Where to get it |
 |-----|----------------|
-| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — free |
+| `GROQ_API_KEY` | [console.groq.com/keys](https://console.groq.com/keys) — free tier |
 | `EXA_API_KEY` | [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys) — free trial |
 | `GMAIL_APP_PASSWORD` | Google Account → Security → 2-Step Verification → App Passwords → create one, copy the 16-character password |
 
@@ -116,7 +116,7 @@ Add these 5 secrets (same values as your `.env` file):
 
 | Secret Name | Value |
 |-------------|-------|
-| `GEMINI_API_KEY` | Your Gemini key |
+| `GROQ_API_KEY` | Your Groq key |
 | `EXA_API_KEY` | Your Exa key |
 | `GMAIL_ADDRESS` | Your Gmail address |
 | `GMAIL_APP_PASSWORD` | Your app password (no spaces) |
@@ -174,7 +174,7 @@ If it turns green ✅ — you're done! The email will now arrive every day at 9 
 No. Once deployed to GitHub Actions, everything runs in the cloud.
 
 **Is it free?**
-Yes. Gemini and Exa both have free tiers. GitHub Actions is free for public repos and has generous free minutes for private repos.
+Yes. Groq and Exa both have free tiers. GitHub Actions is free for public repos and has generous free minutes for private repos.
 
 **Can I add more people later?**
 Yes — just add their email to `RECIPIENT_EMAILS` (comma separated). Everyone gets it privately via BCC.
