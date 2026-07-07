@@ -4,7 +4,10 @@ from crewai_tools import ExaSearchTool
 
 from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 
-GEMINI_FLASH = LLM(model="gemini/gemini-2.5-flash")
+GROQ_LLM = LLM(
+    model="groq/llama-3.3-70b-versatile",
+    max_tokens=8000,
+)
 
 
 @CrewBase
@@ -18,7 +21,7 @@ class DailyAiNewsEmailDigestCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=30,
-            llm=GEMINI_FLASH,
+            llm=GROQ_LLM,
         )
 
     @agent
@@ -28,7 +31,7 @@ class DailyAiNewsEmailDigestCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=10,
-            llm=GEMINI_FLASH,
+            llm=GROQ_LLM,
         )
 
     @agent
@@ -38,7 +41,7 @@ class DailyAiNewsEmailDigestCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=10,
-            llm=GEMINI_FLASH,
+            llm=GROQ_LLM,
         )
 
     @agent
@@ -48,7 +51,7 @@ class DailyAiNewsEmailDigestCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=10,
-            llm=GEMINI_FLASH,
+            llm=GROQ_LLM,
         )
 
     @agent
@@ -59,7 +62,7 @@ class DailyAiNewsEmailDigestCrew:
             inject_date=True,
             allow_delegation=False,
             max_iter=5,
-            llm=GEMINI_FLASH,
+            llm=GROQ_LLM,
         )
 
     @task
