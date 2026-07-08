@@ -1,5 +1,6 @@
 import os
 import smtplib
+import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Type
@@ -22,16 +23,22 @@ class GmailSendTool(BaseTool):
     args_schema: Type[BaseModel] = GmailSendInput
 
     def _run(self, subject: str, body: str) -> str:
+        print(f"[GmailTool] CALLED — subject={subject!r} body_len={len(body)}", file=sys.stderr, flush=True)
+
         sender = os.getenv("GMAIL_ADDRESS")
         password = (os.getenv("GMAIL_APP_PASSWORD") or "").replace(" ", "")
         recipients_env = os.getenv("RECIPIENT_EMAILS", "")
 
+        print(f"[GmailTool] sender={sender} recipients_raw={recipients_env!r}", file=sys.stderr, flush=True)
+
         if not sender or not password:
-            return "Error: GMAIL_ADDRESS or GMAIL_APP_PASSWORD is not set in .env"
+            raise RuntimeError("GMAIL_ADDRESS or GMAIL_APP_PASSWORD env var is missing")
 
         recipients = [r.strip() for r in recipients_env.split(",") if r.strip()]
         if not recipients:
-            return "Error: RECIPIENT_EMAILS is not set in .env"
+            raise RuntimeError("RECIPIENT_EMAILS env var is missing or empty")
+
+        print(f"[GmailTool] Sending to {len(recipients)} recipient(s): {recipients}", file=sys.stderr, flush=True)
 
         msg = MIMEMultipart("alternative")
         msg["From"] = sender
@@ -42,6 +49,10 @@ class GmailSendTool(BaseTool):
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, password)
-            server.sendmail(sender, recipients, msg.as_string())
+            failed = server.sendmail(sender, recipients, msg.as_string())
 
+        if failed:
+            raise RuntimeError(f"SMTP rejected these recipients: {failed}")
+
+        print(f"[GmailTool] SUCCESS — sent to {len(recipients)} recipient(s)", file=sys.stderr, flush=True)
         return f"Email sent successfully to {len(recipients)} recipient(s) via BCC."
