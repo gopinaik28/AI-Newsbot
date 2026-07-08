@@ -1,53 +1,44 @@
 ---
-hunt_ai_news:
-  description: >
-    Run exactly 2 searches using the search_ai_news tool to find today's top AI news.
-
-    Search 1: "AI news today healthcare education finance 2026"
-    Search 2: "AI news today manufacturing transportation energy robotics 2026"
-
-    Do not run more than 2 searches. Collect all results from both searches.
-    For each article note: headline, URL, date, and the short snippet provided.
-  expected_output: >
-    A list of up to 8 articles from both searches. Each has: headline, URL,
-    date, and a one-sentence snippet. Plain text, no formatting.
-  agent: ai_news_hunter
-
 curate_ai_news:
   description: >
-    Review the 4 articles from the hunter. For each one:
-    - Confirm it is a real news story (not a press release or opinion piece)
-    - Write one sentence on why this story matters to professionals and businesses
+    Here are raw AI news articles fetched from the web today ({today}):
 
-    Keep all 4 if they are credible. Replace any weak story with "no story found
-    for this sector" rather than inventing one.
+    {search_results}
+
+    Review these articles. Select the 4 best stories — ones that are genuinely
+    newsworthy, from credible sources, and have real-world impact.
+
+    For each selected story provide:
+    - Sector (e.g. Healthcare, Finance, Education, Manufacturing)
+    - Headline
+    - URL
+    - One sentence on why this story matters
   expected_output: >
-    4 curated entries. Each entry: sector name, headline, URL, one significance sentence.
+    A numbered list of 4 selected stories. Each entry: sector, headline, URL,
+    one significance sentence. No markdown headers, plain text.
   agent: ai_news_analyst
-  context:
-    - hunt_ai_news
 
 write_newsletter_copy:
   description: >
-    Write newsletter copy for the 4 curated AI news stories.
-
-    Use these sector headings (with emoji):
-    🎓 Education & Healthcare | 🏦 Banking & Finance | 🏭 Manufacturing & Transport | 🌟 Emerging Tech
+    Take the 4 curated stories and write newsletter copy for each one.
 
     For each story write:
 
-    1. HEADLINE: The story headline
+    SECTOR: [sector name with emoji — 🎓 Education, 🏥 Healthcare, 🏦 Finance,
+    🏭 Manufacturing, 🚗 Transportation, 🌾 Agriculture, 🌟 Emerging Tech, etc.]
 
-    2. SUMMARY: 2-3 sentences — what happened, who is involved, and the key result or number
+    HEADLINE: [the story headline]
 
-    3. WHY_IT_MATTERS: One sentence starting with "This matters because..."
+    SUMMARY: [2-3 sentences — what happened, who is involved, the key result or number]
 
-    4. SOURCE_URL: The exact URL
+    WHY_IT_MATTERS: [one sentence starting with "This matters because..."]
 
-    Plain text only. No jargon.
+    SOURCE_URL: [the exact URL]
+
+    Write in plain English. No jargon. No markdown formatting.
   expected_output: >
-    Plain text with 4 sector headings. Each story has HEADLINE, SUMMARY (2-3 sentences),
-    WHY_IT_MATTERS (1 sentence), SOURCE_URL. Concise and factual.
+    4 stories, each with SECTOR, HEADLINE, SUMMARY (2-3 sentences),
+    WHY_IT_MATTERS (1 sentence), SOURCE_URL. Plain text only.
   agent: newsletter_copywriter
   context:
     - curate_ai_news
@@ -56,52 +47,64 @@ design_html_email:
   description: >
     Convert the newsletter copy into a complete Gmail-compatible HTML email.
 
-    CRITICAL RULES:
-    - Output raw HTML ONLY — start with <table, no markdown, no code fences
-    - Inline CSS on every element — Gmail strips <style> blocks
-    - Table-based layout only
+    CRITICAL: Output raw HTML ONLY. Start with <table — no markdown, no code fences,
+    no explanation text before or after. Just the HTML.
+
+    Use inline CSS on every element (Gmail strips <style> blocks).
+    Use table-based layout only.
 
     STRUCTURE:
 
-    1. OUTER: <table width="100%" cellpadding="0" cellspacing="0"> with centered
-       inner <table width="600" style="background:#ffffff;font-family:Arial,sans-serif">
+    1. OUTER WRAPPER:
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4">
+      <tr><td align="center">
+        <table width="600" cellpadding="0" cellspacing="0"
+               style="background:#ffffff;font-family:Arial,Helvetica,sans-serif">
 
-    2. HEADER: background #1a1a2e, padding 32px 24px, center-aligned.
-       "Daily AI News Digest" bold white 26px. Date below in #a0aec0 14px.
+    2. HEADER ROW:
+    <tr><td style="background:#1a1a2e;padding:32px 24px;text-align:center">
+      <p style="color:#ffffff;font-size:26px;font-weight:bold;margin:0">
+        Daily AI News Digest</p>
+      <p style="color:#a0aec0;font-size:14px;margin:8px 0 0">
+        [today's date]</p>
+    </td></tr>
 
-    3. INTRO: white bg, padding 14px 24px, center, italic #666666 14px:
-       "Your daily roundup of the most impactful AI developments across industries."
+    3. INTRO ROW:
+    <tr><td style="padding:16px 24px;text-align:center">
+      <p style="color:#666666;font-size:14px;font-style:italic;margin:0">
+        Your daily roundup of the most impactful AI developments across industries.
+      </p>
+    </td></tr>
 
-    4. FOR EACH STORY:
-       - Sector heading: emoji + name, bold #1a1a2e 18px,
-         border-left 4px solid #4f46e5, padding-left 12px
-       - Headline: bold #1a1a2e 14px
-       - Summary: #444444 13px line-height 1.8
-       - Why it matters: italic #4f46e5 12px, background #f0f4ff, padding 6px 10px
-       - "Read more →" as <a href="URL"> color #4f46e5 12px bold no underline
-       - <hr style="border:none;border-top:1px solid #eeeeee;margin:16px 0"> between stories
-       - <hr style="border:none;border-top:2px solid #e2e8f0;margin:0"> between sectors
+    4. FOR EACH STORY (one <tr><td> per story):
+    <tr><td style="padding:20px 24px">
+      <p style="color:#4f46e5;font-size:13px;font-weight:bold;
+                border-left:4px solid #4f46e5;padding-left:10px;margin:0 0 12px">
+        [SECTOR with emoji]</p>
+      <p style="color:#1a1a2e;font-size:15px;font-weight:bold;margin:0 0 8px">
+        [HEADLINE]</p>
+      <p style="color:#444444;font-size:13px;line-height:1.7;margin:0 0 8px">
+        [SUMMARY]</p>
+      <p style="color:#4f46e5;font-size:12px;font-style:italic;
+                background:#f0f4ff;padding:6px 10px;margin:0 0 10px">
+        💡 [WHY_IT_MATTERS]</p>
+      <a href="[SOURCE_URL]"
+         style="color:#4f46e5;font-size:12px;font-weight:bold;text-decoration:none">
+        Read more →</a>
+    </td></tr>
+    <tr><td><hr style="border:none;border-top:1px solid #eeeeee;margin:0"></td></tr>
 
-    5. FOOTER: background #f7f7f7, padding 20px 24px, center.
-       "Powered by AI News Bot | Delivered daily" in #999999 11px
+    5. FOOTER ROW:
+    <tr><td style="background:#f7f7f7;padding:20px 24px;text-align:center">
+      <p style="color:#999999;font-size:11px;margin:0">
+        Powered by AI News Bot | Delivered daily</p>
+    </td></tr>
+
+    Close all tags: </table></td></tr></table>
 
   expected_output: >
-    Raw HTML starting with <table. Inline CSS only. Every story has a "Read more →"
-    link. Renders in Gmail at 600px. No markdown, no code fences.
+    Raw HTML starting with <table. No preamble, no code fences, no markdown.
+    Inline CSS only. Every story has a "Read more →" link. Closes all HTML tags.
   agent: html_email_designer
   context:
     - write_newsletter_copy
-
-send_email_newsletter:
-  description: >
-    Send the HTML email newsletter via Gmail using the send email tool.
-
-    - subject: 🤖 Daily AI News Digest — [Today's full date, e.g. July 8, 2026]
-    - body: pass the raw HTML from the designer EXACTLY as-is — do not alter it
-
-    The tool sends to all configured recipients automatically.
-  expected_output: >
-    Confirmation that the email was sent successfully.
-  agent: email_delivery_agent
-  context:
-    - design_html_email

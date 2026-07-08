@@ -2,14 +2,13 @@ import time
 import litellm
 from crewai import LLM, Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from daily_ai_news_email_digest.tools.exa_tool import LimitedExaTool
-from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 
 litellm.cache = None
 
-# CrewAI 1.15.0 injects Anthropic-specific cache_breakpoint into messages regardless
-# of provider. Groq rejects it. Strip it + add explicit rate-limit retry with sleep.
+# CrewAI 1.15.0 injects Anthropic cache_breakpoint into messages regardless of provider.
+# Groq rejects it. Strip it before every call. Also retry on rate limits.
 _orig_completion = litellm.completion
+
 
 def _completion_stripped(**kwargs):
     for msg in kwargs.get("messages", []):
@@ -20,9 +19,10 @@ def _completion_stripped(**kwargs):
             return _orig_completion(**kwargs)
         except litellm.RateLimitError:
             if attempt < 4:
-                time.sleep(65)  # wait for Groq's 1-minute TPM window to reset
+                time.sleep(65)
             else:
                 raise
+
 
 litellm.completion = _completion_stripped
 
@@ -36,51 +36,29 @@ GROQ_LLM = LLM(
 class DailyAiNewsEmailDigestCrew:
 
     @agent
-    def ai_news_hunter(self) -> Agent:
-        return Agent(
-            config=self.agents_config["ai_news_hunter"],  # type: ignore[index]
-            tools=[LimitedExaTool()],
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=30,
-            llm=GROQ_LLM,
-        )
-
-    @agent
     def ai_news_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["ai_news_analyst"],  # type: ignore[index]
+            config=self.agents_config["ai_news_analyst"],
             inject_date=True,
             allow_delegation=False,
-            max_iter=10,
+            max_iter=5,
             llm=GROQ_LLM,
         )
 
     @agent
     def newsletter_copywriter(self) -> Agent:
         return Agent(
-            config=self.agents_config["newsletter_copywriter"],  # type: ignore[index]
+            config=self.agents_config["newsletter_copywriter"],
             inject_date=True,
             allow_delegation=False,
-            max_iter=10,
+            max_iter=5,
             llm=GROQ_LLM,
         )
 
     @agent
     def html_email_designer(self) -> Agent:
         return Agent(
-            config=self.agents_config["html_email_designer"],  # type: ignore[index]
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=10,
-            llm=GROQ_LLM,
-        )
-
-    @agent
-    def email_delivery_agent(self) -> Agent:
-        return Agent(
-            config=self.agents_config["email_delivery_agent"],  # type: ignore[index]
-            tools=[GmailSendTool()],
+            config=self.agents_config["html_email_designer"],
             inject_date=True,
             allow_delegation=False,
             max_iter=5,
@@ -88,24 +66,16 @@ class DailyAiNewsEmailDigestCrew:
         )
 
     @task
-    def hunt_ai_news(self) -> Task:
-        return Task(config=self.tasks_config["hunt_ai_news"])  # type: ignore[index]
-
-    @task
     def curate_ai_news(self) -> Task:
-        return Task(config=self.tasks_config["curate_ai_news"])  # type: ignore[index]
+        return Task(config=self.tasks_config["curate_ai_news"])
 
     @task
     def write_newsletter_copy(self) -> Task:
-        return Task(config=self.tasks_config["write_newsletter_copy"])  # type: ignore[index]
+        return Task(config=self.tasks_config["write_newsletter_copy"])
 
     @task
     def design_html_email(self) -> Task:
-        return Task(config=self.tasks_config["design_html_email"])  # type: ignore[index]
-
-    @task
-    def send_email_newsletter(self) -> Task:
-        return Task(config=self.tasks_config["send_email_newsletter"])  # type: ignore[index]
+        return Task(config=self.tasks_config["design_html_email"])
 
     @crew
     def crew(self) -> Crew:
