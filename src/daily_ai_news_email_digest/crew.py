@@ -1,13 +1,15 @@
+import litellm
 from crewai import LLM, Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import ExaSearchTool
 
 from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 
+litellm.cache = None  # prevent Anthropic-style cache_breakpoint fields being sent to Groq
+
 GROQ_LLM = LLM(
     model="groq/llama-3.3-70b-versatile",
     max_tokens=8000,
-    cache=False,
 )
 
 
