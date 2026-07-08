@@ -5,7 +5,19 @@ from crewai_tools import ExaSearchTool
 
 from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 
-litellm.cache = None  # prevent Anthropic-style cache_breakpoint fields being sent to Groq
+litellm.cache = None
+
+# CrewAI 1.15.0 injects Anthropic-specific cache_breakpoint into messages regardless
+# of provider. Groq rejects it. Intercept here and strip it before every LLM call.
+_orig_completion = litellm.completion
+
+def _completion_stripped(**kwargs):
+    for msg in kwargs.get("messages", []):
+        if isinstance(msg, dict):
+            msg.pop("cache_breakpoint", None)
+    return _orig_completion(**kwargs)
+
+litellm.completion = _completion_stripped
 
 GROQ_LLM = LLM(
     model="groq/llama-3.3-70b-versatile",
