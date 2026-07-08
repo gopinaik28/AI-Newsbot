@@ -5,17 +5,20 @@ curate_ai_news:
 
     {search_results}
 
-    Review these articles. Select the 4 best stories — ones that are genuinely
-    newsworthy, from credible sources, and have real-world impact.
+    Select exactly 4 stories — ONE story per sector. The 4 sectors must all be
+    DIFFERENT (no two stories from the same sector). Choose from:
+    Education, Healthcare, Finance/Banking, Manufacturing, Transportation,
+    Agriculture, Retail, or Emerging Tech.
 
+    Pick the most newsworthy, credible story from each sector.
     For each selected story provide:
-    - Sector (e.g. Healthcare, Finance, Education, Manufacturing)
+    - Sector name
     - Headline
     - URL
     - One sentence on why this story matters
   expected_output: >
-    A numbered list of 4 selected stories. Each entry: sector, headline, URL,
-    one significance sentence. No markdown headers, plain text.
+    A numbered list of exactly 4 stories, each from a DIFFERENT sector.
+    Each entry: sector, headline, URL, one significance sentence.
   agent: ai_news_analyst
 
 write_newsletter_copy:

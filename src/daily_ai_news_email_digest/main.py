@@ -15,15 +15,17 @@ def _search_news() -> str:
     week_ago = (date.today() - timedelta(days=7)).isoformat()
 
     queries = [
-        f"AI artificial intelligence news {date.today().year} healthcare education",
-        f"AI artificial intelligence news {date.today().year} business finance manufacturing",
+        f"AI education schools EdTech learning {date.today().year}",
+        f"AI healthcare medical diagnosis drug discovery {date.today().year}",
+        f"AI banking finance fraud detection fintech {date.today().year}",
+        f"AI manufacturing robotics transportation autonomous vehicles {date.today().year}",
     ]
 
     articles = []
     for q in queries:
         try:
             resp = exa.search_and_contents(
-                q, num_results=4, text={"max_characters": 400},
+                q, num_results=2, text={"max_characters": 400},
                 start_published_date=week_ago,
             )
             for r in resp.results:
