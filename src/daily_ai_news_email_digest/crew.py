@@ -2,8 +2,7 @@ import time
 import litellm
 from crewai import LLM, Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import ExaSearchTool
-
+from daily_ai_news_email_digest.tools.exa_tool import LimitedExaTool
 from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 
 litellm.cache = None
@@ -40,7 +39,7 @@ class DailyAiNewsEmailDigestCrew:
     def ai_news_hunter(self) -> Agent:
         return Agent(
             config=self.agents_config["ai_news_hunter"],  # type: ignore[index]
-            tools=[ExaSearchTool()],
+            tools=[LimitedExaTool()],
             inject_date=True,
             allow_delegation=False,
             max_iter=30,

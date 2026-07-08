@@ -1,23 +1,16 @@
 ---
 hunt_ai_news:
   description: >
-    Search the web for the single most important AI news story published TODAY
-    in each of these 4 sectors. Do NOT use include_domains — search broadly.
+    Run exactly 2 searches using the search_ai_news tool to find today's top AI news.
 
-    Run one search per sector:
-    1. Education & Healthcare — AI in schools, medical diagnostics, drug discovery
-    2. Banking & Finance — AI in fraud detection, trading, credit scoring, fintech
-    3. Manufacturing & Transportation — AI in robotics, autonomous vehicles, logistics
-    4. Emerging Tech — AI in energy, climate, legal tech, government, or any new domain
+    Search 1: "AI news today healthcare education finance 2026"
+    Search 2: "AI news today manufacturing transportation energy robotics 2026"
 
-    For each sector find 1 strong article. For every article provide:
-    - Exact headline
-    - Publication name and date
-    - Source URL
-    - 1 sentence describing what it covers
+    Do not run more than 2 searches. Collect all results from both searches.
+    For each article note: headline, URL, date, and the short snippet provided.
   expected_output: >
-    4 articles, one per sector. Each has: headline, source name, date, URL,
-    and a one-sentence description. No more than 4 articles total.
+    A list of up to 8 articles from both searches. Each has: headline, URL,
+    date, and a one-sentence snippet. Plain text, no formatting.
   agent: ai_news_hunter
 
 curate_ai_news:
