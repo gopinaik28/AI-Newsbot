@@ -29,7 +29,7 @@ litellm.completion = _completion_stripped
 
 GROQ_LLM = LLM(
     model="groq/llama-3.3-70b-versatile",
-    max_tokens=1500,
+    max_tokens=3000,
 )
 
 
