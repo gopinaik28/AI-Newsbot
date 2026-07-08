@@ -1,132 +1,100 @@
 ---
 hunt_ai_news:
   description: >
-    Search the web for AI news articles published TODAY across these 8 sectors.
-    Run a separate targeted search for each sector:
+    Search the web for the single most important AI news story published TODAY
+    in each of these 4 sectors. Do NOT use include_domains — search broadly.
 
-    1. Education — AI in schools, adaptive learning, AI tutoring, EdTech
-    2. Agriculture — AI in farming, crop disease detection, yield prediction, precision agriculture
-    3. Banking & Finance — AI in fraud detection, algorithmic trading, credit scoring, fintech
-    4. Healthcare — AI in diagnostics, drug discovery, medical imaging, patient care
-    5. Retail & E-commerce — AI in recommendations, inventory, supply chain, customer service
-    6. Manufacturing — AI in automation, predictive maintenance, quality control, robotics
-    7. Transportation — AI in autonomous vehicles, logistics, route optimization, traffic
-    8. Emerging Sectors — AI in energy, legal tech, climate, real estate, government, or any notable new domain
+    Run one search per sector:
+    1. Education & Healthcare — AI in schools, medical diagnostics, drug discovery
+    2. Banking & Finance — AI in fraud detection, trading, credit scoring, fintech
+    3. Manufacturing & Transportation — AI in robotics, autonomous vehicles, logistics
+    4. Emerging Tech — AI in energy, climate, legal tech, government, or any new domain
 
-    For each sector collect 2-3 articles. For every article provide:
-    - Exact headline or title
-    - Publication name and date (today's date preferred)
+    For each sector find 1 strong article. For every article provide:
+    - Exact headline
+    - Publication name and date
     - Source URL
-    - 1-2 sentence snippet describing what the article covers
+    - 1 sentence describing what it covers
   expected_output: >
-    A raw collection of AI news articles grouped by sector heading. Each sector
-    contains 2-3 articles. Each article has: headline, source name, date, URL,
-    and a short snippet. All 8 sectors must be covered.
+    4 articles, one per sector. Each has: headline, source name, date, URL,
+    and a one-sentence description. No more than 4 articles total.
   agent: ai_news_hunter
 
 curate_ai_news:
   description: >
-    Review the full raw news collection from the hunter. For each of the 8 sectors,
-    apply these filters:
-    - Remove duplicate stories (same event covered by multiple outlets — keep the best source)
-    - Remove press releases, product announcements with no news value, or opinion pieces
-    - Reject articles older than 48 hours
-    - Prioritize stories from credible outlets and with verifiable specifics
+    Review the 4 articles from the hunter. For each one:
+    - Confirm it is a real news story (not a press release or opinion piece)
+    - Write one sentence on why this story matters to professionals and businesses
 
-    For each sector, select the 1-2 best stories. For every selected story provide:
-    - Sector name
-    - Headline
-    - Source URL
-    - Significance note: 1 sentence on why this story matters — the real-world impact or implication
-    - Key fact or figure from the snippet (a number, a named company, a specific technology)
+    Keep all 4 if they are credible. Replace any weak story with "no story found
+    for this sector" rather than inventing one.
   expected_output: >
-    A curated shortlist organized by sector. Each sector has 1-2 selected stories
-    with: headline, URL, significance note, and one key fact. 8 sectors, 8-16
-    total stories. Clean, no duplicate stories, no low-quality sources.
+    4 curated entries. Each entry: sector name, headline, URL, one significance sentence.
   agent: ai_news_analyst
   context:
     - hunt_ai_news
 
 write_newsletter_copy:
   description: >
-    Take the curated AI news shortlist and write polished, informative newsletter copy.
+    Write newsletter copy for the 4 curated AI news stories.
 
-    Organize stories under sector headings using exactly these labels (with emoji):
-    🎓 Education | 🌾 Agriculture | 🏦 Banking & Finance | 🏥 Healthcare
-    🛒 Retail & E-commerce | 🏭 Manufacturing | 🚗 Transportation | 🌟 Emerging Sectors
+    Use these sector headings (with emoji):
+    🎓 Education & Healthcare | 🏦 Banking & Finance | 🏭 Manufacturing & Transport | 🌟 Emerging Tech
 
-    For each story write these four parts in order:
+    For each story write:
 
-    1. HEADLINE: A clear, descriptive headline (accurate and engaging — not clickbait)
+    1. HEADLINE: The story headline
 
-    2. SUMMARY: A detailed 4-5 sentence summary covering:
-       - What happened or was announced
-       - Who is involved (company, research group, government, etc.)
-       - The specific technology or approach being used
-       - Key numbers, results, or outcomes mentioned
-       The goal: a reader fully understands the story without clicking anywhere.
+    2. SUMMARY: 2-3 sentences — what happened, who is involved, and the key result or number
 
-    3. WHY_IT_MATTERS: <one punchy sentence starting with "This matters because..." or
-       "The impact:" — the single most important takeaway about real-world significance>
+    3. WHY_IT_MATTERS: One sentence starting with "This matters because..."
 
-    4. SOURCE_URL: <the exact url>
+    4. SOURCE_URL: The exact URL
 
-    Write in clear plain English. No jargon without explanation. Plain text only.
+    Plain text only. No jargon.
   expected_output: >
-    Plain text organized by sector with emoji headings. Each story has four clearly
-    labeled parts: HEADLINE, SUMMARY (4-5 sentences), WHY_IT_MATTERS (1 sentence),
-    SOURCE_URL. All 8 sectors covered with 1-2 stories each.
+    Plain text with 4 sector headings. Each story has HEADLINE, SUMMARY (2-3 sentences),
+    WHY_IT_MATTERS (1 sentence), SOURCE_URL. Concise and factual.
   agent: newsletter_copywriter
   context:
     - curate_ai_news
 
 design_html_email:
   description: >
-    Convert the polished newsletter copy into a complete, Gmail-compatible HTML email body.
+    Convert the newsletter copy into a complete Gmail-compatible HTML email.
 
-    CRITICAL OUTPUT RULES:
-    - Output raw HTML ONLY — start directly with <table
-    - Absolutely NO markdown, NO code fences, NO backticks, NO ```html blocks
-    - Use inline CSS on every element — Gmail strips <style> blocks entirely
-    - Use table-based layout only
+    CRITICAL RULES:
+    - Output raw HTML ONLY — start with <table, no markdown, no code fences
+    - Inline CSS on every element — Gmail strips <style> blocks
+    - Table-based layout only
 
-    DESIGN SPEC:
+    STRUCTURE:
 
-    1. OUTER WRAPPER: <table width="100%" cellpadding="0" cellspacing="0"> with a centered
-       inner <table width="600" style="background:#ffffff;font-family:Arial,Helvetica,sans-serif">
+    1. OUTER: <table width="100%" cellpadding="0" cellspacing="0"> with centered
+       inner <table width="600" style="background:#ffffff;font-family:Arial,sans-serif">
 
-    2. HEADER: Full-width cell, background #1a1a2e, padding 32px 24px, text-align center.
-       - "Daily AI News Digest" in bold white, font-size 26px, margin-bottom 6px
-       - Today's date below in #a0aec0, font-size 14px, font-weight normal
+    2. HEADER: background #1a1a2e, padding 32px 24px, center-aligned.
+       "Daily AI News Digest" bold white 26px. Date below in #a0aec0 14px.
 
-    3. INTRO LINE: White background, padding 14px 24px, text-align center.
-       - Italic, color #666666, font-size 14px:
-         "Your daily roundup of the most impactful AI developments across industries."
+    3. INTRO: white bg, padding 14px 24px, center, italic #666666 14px:
+       "Your daily roundup of the most impactful AI developments across industries."
 
-    4. SECTOR SECTIONS: For each sector:
-       - Padding 24px 24px 12px, background #ffffff
-       - Sector heading: emoji + name, bold, #1a1a2e, font-size 18px,
-         border-left 4px solid #4f46e5, padding-left 12px, margin-bottom 16px
-       - For each story:
-           a. Headline: bold, #1a1a2e, font-size 14px, margin-bottom 6px (plain text, not a link)
-           b. Summary: #444444, font-size 13px, line-height 1.8, margin-bottom 8px
-           c. "💡 Why it matters:" line: the WHY_IT_MATTERS text from the copy, styled as
-              font-style italic, color #4f46e5, font-size 12px, font-weight 600,
-              background #f0f4ff, padding 6px 10px, border-radius 4px, margin-bottom 10px,
-              display block
-           d. "Read more →" as <a href="SOURCE_URL_VALUE"> styled:
-              color #4f46e5, font-size 12px, font-weight bold, text-decoration none
-              Replace SOURCE_URL_VALUE with the actual URL from the copy for that story.
-       - Between stories: <hr style="border:none;border-top:1px solid #eeeeee;margin:16px 0">
-       - Between sectors: <hr style="border:none;border-top:2px solid #e2e8f0;margin:0">
+    4. FOR EACH STORY:
+       - Sector heading: emoji + name, bold #1a1a2e 18px,
+         border-left 4px solid #4f46e5, padding-left 12px
+       - Headline: bold #1a1a2e 14px
+       - Summary: #444444 13px line-height 1.8
+       - Why it matters: italic #4f46e5 12px, background #f0f4ff, padding 6px 10px
+       - "Read more →" as <a href="URL"> color #4f46e5 12px bold no underline
+       - <hr style="border:none;border-top:1px solid #eeeeee;margin:16px 0"> between stories
+       - <hr style="border:none;border-top:2px solid #e2e8f0;margin:0"> between sectors
 
-    5. FOOTER: Background #f7f7f7, padding 20px 24px, text-align center.
-       - "Powered by AI News Bot | Delivered daily" in #999999, font-size 11px
+    5. FOOTER: background #f7f7f7, padding 20px 24px, center.
+       "Powered by AI News Bot | Delivered daily" in #999999 11px
 
   expected_output: >
-    Raw HTML starting directly with <table (no preamble, no code fences, no markdown).
-    Fully self-contained inline CSS. Every story must have a "Read more →" anchor
-    pointing to its SOURCE_URL. Renders correctly in Gmail at 600px width.
+    Raw HTML starting with <table. Inline CSS only. Every story has a "Read more →"
+    link. Renders in Gmail at 600px. No markdown, no code fences.
   agent: html_email_designer
   context:
     - write_newsletter_copy
@@ -135,15 +103,12 @@ send_email_newsletter:
   description: >
     Send the HTML email newsletter via Gmail using the send email tool.
 
-    - Set `subject`: 🤖 Daily AI News Digest — [Today's full date, e.g. June 30, 2026]
-    - Set `body`: pass the raw HTML from the designer VERBATIM — do NOT alter it,
-      do NOT wrap it in markdown or any formatting, copy it exactly as-is
+    - subject: 🤖 Daily AI News Digest — [Today's full date, e.g. July 8, 2026]
+    - body: pass the raw HTML from the designer EXACTLY as-is — do not alter it
 
-    The tool automatically sends to all configured recipients. After sending,
-    confirm the email was dispatched successfully.
+    The tool sends to all configured recipients automatically.
   expected_output: >
-    Confirmation that the email was sent successfully to all recipients
-    with the correct subject line and raw HTML body.
+    Confirmation that the email was sent successfully.
   agent: email_delivery_agent
   context:
     - design_html_email

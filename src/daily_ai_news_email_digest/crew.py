@@ -1,3 +1,4 @@
+import time
 import litellm
 from crewai import LLM, Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
@@ -6,23 +7,29 @@ from crewai_tools import ExaSearchTool
 from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 
 litellm.cache = None
-litellm.num_retries = 5  # auto-retry on rate limits (waits ~30s between attempts)
 
 # CrewAI 1.15.0 injects Anthropic-specific cache_breakpoint into messages regardless
-# of provider. Groq rejects it. Intercept here and strip it before every LLM call.
+# of provider. Groq rejects it. Strip it + add explicit rate-limit retry with sleep.
 _orig_completion = litellm.completion
 
 def _completion_stripped(**kwargs):
     for msg in kwargs.get("messages", []):
         if isinstance(msg, dict):
             msg.pop("cache_breakpoint", None)
-    return _orig_completion(**kwargs)
+    for attempt in range(5):
+        try:
+            return _orig_completion(**kwargs)
+        except litellm.RateLimitError:
+            if attempt < 4:
+                time.sleep(65)  # wait for Groq's 1-minute TPM window to reset
+            else:
+                raise
 
 litellm.completion = _completion_stripped
 
 GROQ_LLM = LLM(
     model="groq/llama-3.3-70b-versatile",
-    max_tokens=4000,
+    max_tokens=1500,
 )
 
 
