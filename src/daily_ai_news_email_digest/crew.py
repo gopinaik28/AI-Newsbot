@@ -7,6 +7,7 @@ from daily_ai_news_email_digest.tools.gmail_tool import GmailSendTool
 GROQ_LLM = LLM(
     model="groq/llama-3.3-70b-versatile",
     max_tokens=8000,
+    cache=False,
 )
 
 
